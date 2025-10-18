@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hạnh phúc khi thấy em cười — Poster 20/10 (Heart Reveal)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Noto+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-top:#FFF1E6;
+      --bg-bot:#FFD1A1;
+      --sun:#FFC36D;
+      --text:#C71585;
+      --hi:#FF69B4;
+      --note:#C71585;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;}
+    body{display:grid;place-items:center;background:#fff0f5;color:var(--text);font-family:'Noto Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}
+    .frame{width:min(92vw,1080px);aspect-ratio:1080/1350;position:relative;border-radius:28px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+    .bg{position:absolute;inset:0;background:linear-gradient(180deg,var(--bg-top),var(--bg-bot));}
+    .layer{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 72px;}
+    .headline{font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(28px,5vmin,72px);line-height:1.1;letter-spacing:.02em;color:var(--hi);}
+    .sub{margin-top:24px;font-size:clamp(18px,2.7vmin,32px);max-width:78ch;}
+    .note{margin-top:36px;font-size:clamp(16px,2.2vmin,28px);color:var(--note);text-align:right;width:100%;}
+    .heart-big{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-size:clamp(100px,16vmin,260px);color:red;filter:blur(1px) saturate(180%);opacity:0.95;}
+    .line{display:block;white-space:pre-wrap;min-height:1.2em}
+    .text span{opacity:1;transition:opacity .3s ease;}
+    .start{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.18);backdrop-filter:blur(2px);color:#fff;cursor:pointer;}
+    .start .btn{background:#111111d0;border:1px solid rgba(255,255,255,.18);padding:14px 22px;border-radius:14px;font-weight:600;letter-spacing:.02em;display:flex;gap:10px;align-items:center;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+    .start .btn svg{width:18px;height:18px;}
+    #marker{position:absolute;transform:translate(-50%,-50%);opacity:0;filter:drop-shadow(0 6px 12px rgba(0,0,0,.25));will-change:transform;transition:transform .4s ease-out,opacity .6s ease;font-size:clamp(64px,12vmin,200px);} 
+    .puff{position:absolute;font-size:clamp(16px,3vmin,48px);opacity:.8;animation:puff 0.7s ease-out forwards;color:red;}
+    @keyframes puff{to{transform:translateY(-20px) scale(0.6);opacity:0;}}
+  </style>
+</head>
+<body>
+  <div class="frame" id="frame">
+    <div class="bg"></div>
+    <div class="layer text" id="text">
+      <div id="headline" class="headline">
+        <span class="line" data-text="HẠNH PHÚC KHI THẤY EM CƯỜI"></span>
+      </div>
+      <div id="sub" class="sub">
+        <span class="line" data-text="Chúc mừng Ngày Phụ Nữ Việt Nam 20/10"></span>
+        <span class="line" data-text="Em là ánh nắng dịu dàng làm ấm mái nhà."></span>
+        <span class="line" data-text="là bình yên nở giữa những bận rộn thường ngày."></span>
+      </div>
+      <div id="note" class="note">
+        <span class="line" id="line-note-1" data-text="Riêng em, HỒNG: nụ cười của em chính là mặt trời nhỏ trong tim anh."></span>
+        <span class="line" id="line-note-2" data-text="— Người yêu của Em"></span>
+      </div>
+      <div class="heart-big">❤️</div>
+    </div>
+    <div id="marker">❤️</div>
+    <div class="start" id="start">
+      <div class="btn" aria-label="Bắt đầu">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7L8 5Z" fill="#fff"/></svg>
+        Nhấn để bắt đầu hiệu ứng
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SPEED = 40;
+    const PAUSE_LINE = 450;
+    const frame=document.getElementById('frame');const start=document.getElementById('start');const marker=document.getElementById('marker');
+
+    function moveMarkerTo(x,y){marker.style.transform=`translate(${x}px,${y}px)`;if(marker.style.opacity!=='1')marker.style.opacity='1';}
+    function puff(x,y){const h=document.createElement('div');h.textContent='❤';h.className='puff';h.style.left=x+'px';h.style.top=y+'px';frame.appendChild(h);setTimeout(()=>h.remove(),700);}
+    function measureWidth(parent,text,style){const s=document.createElement('span');s.textContent=text;s.style.visibility='hidden';s.style.whiteSpace='pre';if(style)Object.assign(s.style,style);parent.appendChild(s);const w=s.getBoundingClientRect().width;s.remove();return w;}
+
+    async function typeLine(lineEl,style,offsetY=-22){
+      const full=lineEl.dataset.text||'';
+      lineEl.textContent='';
+      const container=lineEl.parentElement;
+      const fs=parseFloat(getComputedStyle(container).fontSize||'28')*2;
+      marker.style.fontSize=fs+'px';
+      const frameBox=frame.getBoundingClientRect();
+      const lineBox=lineEl.getBoundingClientRect();
+      for(let i=0;i<full.length;i++){
+        lineEl.textContent+=full[i];
+        const w=measureWidth(container,lineEl.textContent,style);
+        const x=(lineBox.left-frameBox.left)+w+18;
+        const y=(lineBox.top-frameBox.top)+offsetY;
+        moveMarkerTo(x,y);
+        puff(x-6,y-6);
+        await new Promise(r=>setTimeout(r,SPEED));
+      }
+      await new Promise(r=>setTimeout(r,PAUSE_LINE));
+    }
+
+    async function run(){
+      start.remove();
+      const styleHL={fontFamily:`'Montserrat','Noto Sans',sans-serif`,fontWeight:'800',fontSize:getComputedStyle(document.querySelector('.headline')).fontSize};
+      const styleSub={fontFamily:`'Noto Sans',sans-serif`,fontWeight:'400',fontSize:getComputedStyle(document.querySelector('.sub')).fontSize};
+      const styleNote={fontFamily:`'Noto Sans',sans-serif`,fontStyle:'italic',fontSize:getComputedStyle(document.querySelector('.note')).fontSize};
+      const lines=[document.querySelector('#headline .line'),...document.querySelectorAll('#sub .line'),document.getElementById('line-note-1'),document.getElementById('line-note-2')];
+      moveMarkerTo(80,80);
+      await new Promise(r=>setTimeout(r,300));
+      for(let i=0;i<lines.length;i++){
+        const s=i===0?styleHL:(i<=3?styleSub:styleNote);
+        await typeLine(lines[i],s);
+      }
+      marker.style.opacity='0';
+    }
+
+    document.getElementById('start').addEventListener('click',run);
+  </script>
+</body>
+</html>
